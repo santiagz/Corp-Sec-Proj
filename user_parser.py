@@ -12,7 +12,7 @@ client = TelegramClient("USER_NAME",config.api_id, config.api_hash)
 client.start()
 
 async def main():
-    url = "" #URL for chat which u want to parse
+    url = "https://t.me/joinchat/GtMuCg2wgdfSheea8qG6fA" #URL for chat which u want to parse
     channel = await client.get_entity(url)
     await dump_all_users(channel)
 
@@ -39,7 +39,7 @@ async def dump_all_users(channel):
     
 
 def db_proccess(id:int, username:str, first_name:str, phone:str):
-    # NAME YOUR DB
+    # NAME YOUR DB!
     with sq.connect("db.db") as con:
         cur = con.cursor()
         create = "CREATE TABLE IF NOT EXISTS users (id INTEGER, username TEXT, first_name TEXT, phone TEXT)"
