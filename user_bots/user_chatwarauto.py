@@ -5,7 +5,7 @@ from config import api_id, api_hash
 from time import sleep
 import re
 
-debug = emojize(":two_hearts: Obrigalovo")
+defence = emojize(":shield:Защита")
 hero = emojize(":sports_medal:Герой")
 quests = emojize(":world_map:Квесты")
 
@@ -32,6 +32,7 @@ def forest_gump(cli):
     else:
         sleep(3)
         print("[-]No stamina, go to sleep for 5 hours...")
+        cli.send_message("ChatWarsBot", defence)
         sleep(18000)
         forest_gump(cli)
 
