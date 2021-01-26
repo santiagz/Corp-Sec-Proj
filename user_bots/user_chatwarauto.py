@@ -1,22 +1,35 @@
 #Script to auto upgrade hero level in @ChatWarsBot
 from telethon.sync import TelegramClient, events
+from telethon.tl.functions.users import GetFullUserRequest
 from emoji import emojize
 from config import api_id, api_hash
 from time import sleep
 import re
-#TODO: print time
+#from loguru import logger
+from os import popen
+#TODO: loguru
 
 defence = emojize(":shield:Защита")
 hero = emojize(":sports_medal:Герой")
 quests = emojize(":world_map:Квесты")
 
+#logger.add("debug.log", format="{time} {level} {message}", level="DEBUG", rotation="5 MB", compression="zip")
+
+def parse_sessions():
+    """ Take to array all sessions from 'session/' dir """
+    DIR = "sessions"
+    ls = popen("ls "+DIR+"/").read()
+    rels = re.findall(".+\.session", ls)
+    return rels
+
 def forest_gump(cli):
+    """ Function that go client to forest while have stamina """
     if hero_stamina(cli) > 0:
         print("[+] You have stamina, have we go!")
         cli.send_message("ChatWarsBot", quests)
         msg1 = cli.get_messages("ChatWarsBot")
         sleep(2)
-        if msg1[0].click() == None:
+        if msg1[0].click(0) == None:
             print("[-]Click failed")
             forest_gump(cli)
         else:
@@ -29,16 +42,16 @@ def forest_gump(cli):
             print("[+] Time you gone forest (in seconds) ==", msg_time)
             msg_time += 30
             sleep(msg_time)
-            forest_gump(cli)
+            return True
     else:
         sleep(3)
         print("[-]No stamina, go to sleep for 5 hours...")
         cli.send_message("ChatWarsBot", defence)
-        sleep(18000)
-        forest_gump(cli)
+        return False
 
 
 def hero_stamina(cli):
+    """ Check how many stamina client have  """
     cli.send_message("ChatWarsBot", hero)
     sleep(1)
     msg = cli.get_messages("ChatWarsBot")
@@ -49,6 +62,7 @@ def hero_stamina(cli):
     return stamina
 
 def krob_de_karavan(cli):
+    """ Same as 'forest_gump' but client goes on karavan  """
     if hero_stamina(cli) > 1:
         print("[+]You have stamina to robe karavan, have we go!")
         cli.send_message("ChatWarsBot", quests)
@@ -73,8 +87,21 @@ def krob_de_karavan(cli):
         krob_de_karavan(cli)
 
 
-with TelegramClient('gol0va4_l3na', api_id, api_hash) as client:
-    krob_de_karavan(client)
-    #forest_gump(client)
+def main():
+    sessions = parse_sessions()
+    for session in sessions:
+        sessdir = "sessions/"+session
+        with TelegramClient(sessdir, api_id, api_hash) as client:
+            full = client(GetFullUserRequest(session.split(".")[0]))
+            print(full.user.username,"in FOR!")
+            while forest_gump(client):
+                print(sessdir,"{continue...}")
+                continue
+            else:
+                pass
+                print(sessdir,"{continue...}")
 
-    client.run_until_disconnected()
+
+        #client.run_until_disconnected()
+
+main()
