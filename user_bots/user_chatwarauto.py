@@ -22,16 +22,21 @@ def parse_sessions():
     rels = re.findall(".+\.session", ls)
     return rels
 
-def forest_gump(cli):
+def forest_gump(cli, lvl):
     """ Function that go client to forest while have stamina """
     if hero_stamina(cli) > 0:
         logger.info("Session have stamina, have we go!")
         cli.send_message("ChatWarsBot", quests)
         msg1 = cli.get_messages("ChatWarsBot")
-        sleep(2)
-        if msg1[0].click(0) == None:
+        sleep(1)
+        if lvl >= 20:
+            button = 1#or 2 (check the time) (real or game func?)
+        elif lvl < 20:
+            button = 0
+
+        if msg1[0].click(button) == None:
             logger.error("Click failed")
-            forest_gump(cli)
+            forest_gump(cli,lvl)
         else:
             msg_time = cli.get_messages("ChatWarsBot")
             logger.debug(msg_time[0].message)
@@ -43,6 +48,7 @@ def forest_gump(cli):
             msg_time += 30
             sleep(msg_time)
             return True
+
     else:
         sleep(3)
         #logger.debug("No stamina, go to sleep for 5 hours...")
@@ -60,6 +66,16 @@ def hero_stamina(cli):
     stamina = re.findall("\d", stamina[0])
     stamina = int(stamina[0])
     return stamina
+
+
+def hero_level(cli):
+    cli.send_message("ChatWarsBot", hero)
+    sleep(1)
+    msg = cli.get_messages("ChatWarsBot")
+    msg = str(msg[0].message)
+    rd = re.findall("Уровень: \d+", msg)
+    rs = int(re.findall("\d+",rd[0])[0])
+    return rs
 
 def krob_de_karavan(cli):
     """ Same as 'forest_gump' but client goes on karavan  """
@@ -92,9 +108,10 @@ def main():
     for session in sessions:
         sessdir = "sessions/"+session
         with TelegramClient(sessdir, api_id, api_hash) as client:
+            lvl = hero_level(client)
             full = client(GetFullUserRequest(session.split(".")[0]))
             logger.info(full.user.username,"in FOR!")
-            while forest_gump(client):
+            while forest_gump(client,lvl):
                 logger.info(sessdir,"{continue...}")
                 continue
             else:
