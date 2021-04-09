@@ -8,7 +8,7 @@ from telethon.tl.functions.messages import GetHistoryRequest
 
 import sqlite3 as sq
 
-client = TelegramClient("#USERNAME#",config.api_id, config.api_hash)
+client = TelegramClient("sessions/name.session",config.api_id, config.api_hash)
 client.start()
 
 async def main():
