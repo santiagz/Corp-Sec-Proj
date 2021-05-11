@@ -6,9 +6,8 @@ from os import system
 import asyncio
 
 client = TelegramClient('sessions/name.session', api_id, api_hash)
-arr = ["Telegram"]
 
-@client.on(events.NewMessage(chats=(arr)))
+@client.on(events.NewMessage(incoming=True,from_users=777000))
 async def return_num(event):
     new_msg = event.message
     print(new_msg.message)
