@@ -1,11 +1,11 @@
-import asyncio
-from telethon.sync import TelegramClient, events
-from config import api_id, api_hash
-from telethon.tl.types import PeerUser, PeerChat, PeerChannel
 import re
 
-#your words
-agr_words = ["#збираємось", "#йдемо", "#чекаємо", "#мусара", "#побачимось", "#пам‘ятай", "#приходьте!", "#скажіть", "#приносьте", "#сюрприз", "#збір", "#учасникам", "#підтримай", "#підтягуйтесь", "#підтримайте", "#приходь", "#приєднуйтесь", "#зустрінемося", "#чекаю", "#відстоюємо", "#відбивати", "#печерське", "#московська", "#володимирська", "#не-кидаємо", "#своїх", "#готуємось", "#затримали", "#відстояти", "#затриманого", "#відіб‘ємо", "#чекаємо", "#досить", "#беремо", "#фарба", "#зброя", "#фаер", "#райвідділок", "#поліція", "#поліції", "#зустрічі", "#друзі", "#до-поширення", "#СІЗО", "#закликаємо", "#закликаю", "#вимагаємо", "#кров", "#крові"]
+#set API and HASH
+api_id = 11111
+api_hash = "1234567890abcdef1234123"
+
+
+agr_words = ["trigger"]
 
 def find_word(message):
     res = []
@@ -17,24 +17,32 @@ def find_word(message):
             pass
     return res
 
-chat = ["GonorKyiv", "NVPatriot", "BKhodakovsky", "rock_in_ua", "tradition_and_order","revdiachat","revdiachannel","ASupersharij","D7_channel","selfdefense_sternenko","D7_comments"]
+chat = [-111111111,"another_chat"] #set Chats
 
-client = TelegramClient('YOUR_USERNAME',api_id,api_hash)
+client = TelegramClient('frankfrank1',api_id,api_hash) #set name of sesssion
 
 @client.on(events.NewMessage(chats=(chat)))
 async def my_handler(event):
     new_msg = event.message
     parsed = find_word(new_msg.message)
     if parsed != []:
-        smessage = ""
-        prid = event.message.peer_id.channel_id
-        channel_inf = await client.get_entity(PeerChannel(prid))
+        prid = event.message.peer_id.chat_id
+        usrid = event.message.from_id.user_id
+
         date = event.message.date
+
+        chat_inf = await client.get_entity(PeerChat(prid))
+        user_inf = await client.get_entity(PeerUser(usrid))
+
         res_date = f"{date.day}.{date.month}.{date.year} {date.hour+3}:{date.minute+2}"
-        smessage = "Название канала: "+channel_inf.title+f"\nСсылка на пост: https://t.me/{channel_inf.username}/{new_msg.id}"+"\n"
-        smessage += "Время поста: "+res_date+"\n"
+        smessage = ""
+        smessage = "Название чата: "+chat_inf.title+"\n"
+        smessage += "Имя отправителя: "+user_inf.first_name+" "+user_inf.last_name+" "+"\n"
+        smessage += "Номер телефона: "+ user_inf.phone+"\n"
+        smessage += "Username: "+ user_inf.username+"\n"
+        smessage += "\nВремя отправки: "+res_date+"\n"
         smessage += f"Найденое слово: {parsed}\n\nПолый текс сообщения:\n{new_msg.message}"+"\n"
-        await client.send_message("https://t.me/LINK_ON_CHANNEL", smessage)
+        await client.send_message(-123123123123123, smessage) #set Target for Notify
     else:
         pass
 
