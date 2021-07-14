@@ -34,7 +34,7 @@ async def my_handler(event):
         chat_inf = await client.get_entity(PeerChat(prid))
         user_inf = await client.get_entity(PeerUser(usrid))
 
-        res_date = f"{date.day}.{date.month}.{date.year} {date.hour+3}:{date.minute+2}"
+        res_date = f"{date.day}.{date.month}.{date.year} {date.hour+3}:{date.minute}"
         smessage = ""
         smessage = "Название чата: "+chat_inf.title+"\n"
         smessage += "Имя отправителя: "+user_inf.first_name+" "+user_inf.last_name+" "+"\n"
